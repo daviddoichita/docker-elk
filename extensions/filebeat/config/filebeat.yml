@@ -9,41 +9,39 @@ filebeat.config:
     path: ${path.config}/modules.d/*.yml
     reload.enabled: false
 
-filebeat.autodiscover:
-  providers:
-    # The Docker autodiscover provider automatically retrieves logs from Docker
-    # containers as they start and stop.
-    - type: docker
-      hints.enabled: true
-      hints.default_config:
-        type: container
-        paths:
-          - /var/lib/docker/containers/${data.container.id}/*-json.log
-      templates:
-        - condition:
-            contains:
-              docker.container.image: elasticsearch
-          config:
-            - module: elasticsearch
-              server:
-                input:
-                  type: container
-                  paths:
-                    - /var/lib/docker/containers/${data.container.id}/*-json.log
+# filebeat.autodiscover:
+#   providers:
+#     - type: docker
+#       templates:
+#         - condition:
+#             contains:
+#               docker.container.image: logstash
+#           config:
+#             - type: container
+#               paths: /var/lib/docker/containers/${data.container.id}/*-json.log
+
+filebeat.inputs:
+  - type: filestream
+    id: logstash-logs
+    enabled: true
+    paths: /var/lib/docker/containers/cda0913a7a479ca2ad54ce5d135b83bab7f5e36055ac855df89d6b7a53135ff9/*-json.log
 
 processors:
   - add_cloud_metadata: ~
 
-monitoring:
-  enabled: true
-  elasticsearch:
-    username: beats_system
-    password: ${BEATS_SYSTEM_PASSWORD}
+# monitoring:
+#   enabled: true
+#   elasticsearch:
+#     username: beats_system
+#     password: ${BEATS_SYSTEM_PASSWORD}
 
-output.elasticsearch:
-  hosts: [ http://elasticsearch:9200 ]
-  username: filebeat_internal
-  password: ${FILEBEAT_INTERNAL_PASSWORD}
+# output.elasticsearch:
+#   hosts: [http://elasticsearch:9200]
+#   username: filebeat_internal
+#   password: ${FILEBEAT_INTERNAL_PASSWORD}
+
+output.logstash:
+  hosts: ["logstash:5044"]
 
 ## HTTP endpoint for health checking
 ## https://www.elastic.co/guide/en/beats/filebeat/current/http-endpoint.html

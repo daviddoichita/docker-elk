@@ -16,6 +16,7 @@ services:
       - --strict.perms=false
     volumes:
       - ./extensions/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - ./extensions/filebeat/logs/log.txt:/usr/share/filebeat/logs/logs.txt:ro
       - type: bind
         source: /var/lib/docker/containers
         target: /var/lib/docker/containers
@@ -31,3 +32,4 @@ services:
       - elk
     depends_on:
       - elasticsearch
+      - logstash
