@@ -9,22 +9,22 @@ filebeat.config:
     path: ${path.config}/modules.d/*.yml
     reload.enabled: false
 
-# filebeat.autodiscover:
-#   providers:
-#     - type: docker
-#       templates:
-#         - condition:
-#             contains:
-#               docker.container.image: logstash
-#           config:
-#             - type: container
-#               paths: /var/lib/docker/containers/${data.container.id}/*-json.log
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.image: logstash
+          config:
+            - type: container
+              paths: /var/lib/docker/containers/${data.container.id}/*-json.log
 
-filebeat.inputs:
-  - type: filestream
-    id: logstash-logs
-    enabled: true
-    paths: /var/lib/docker/containers/cda0913a7a479ca2ad54ce5d135b83bab7f5e36055ac855df89d6b7a53135ff9/*-json.log
+# filebeat.inputs:
+#   - type: filestream
+#     id: logstash-logs
+#     enabled: true
+#     paths: /var/lib/docker/containers/cda0913a7a479ca2ad54ce5d135b83bab7f5e36055ac855df89d6b7a53135ff9/*-json.log
 
 processors:
   - add_cloud_metadata: ~
